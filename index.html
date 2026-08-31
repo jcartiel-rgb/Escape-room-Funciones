@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape Room: El laboratorio de las funciones</title>
+<style>
+:root{--bg:#0b1020;--panel:#151d36;--panel2:#1d2847;--text:#eef3ff;--muted:#aeb9d6;--accent:#7c9cff;--ok:#55d68a;--bad:#ff6b7a;--gold:#ffd166}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#1b2750,#080c18 70%);color:var(--text);min-height:100vh}
+.app{max-width:1050px;margin:auto;padding:24px}.hero{padding:28px;border:1px solid #33416b;border-radius:20px;background:linear-gradient(135deg,#182348,#10162b);box-shadow:0 15px 45px #0006}
+h1{margin:.1em 0 .3em;font-size:clamp(2rem,5vw,3.6rem)}h2{margin-top:0}.subtitle{color:var(--muted);font-size:1.05rem}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.stat{background:#0d1428;border:1px solid #344064;border-radius:12px;padding:10px 14px}.stat b{color:var(--gold)}
+.progress{height:10px;background:#0b1122;border-radius:99px;overflow:hidden;margin:20px 0}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#b28cff);transition:.4s}
+.room{display:none;margin-top:20px;padding:24px;background:#121a30;border:1px solid #2f3b61;border-radius:18px}.room.active{display:block}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#28365e;color:#cbd6ff;font-size:.85rem;margin-bottom:10px}
+.card{background:var(--panel);padding:18px;border-radius:14px;margin:15px 0;border:1px solid #303c62}
+.question{font-weight:700;font-size:1.05rem}.options{display:grid;gap:9px;margin-top:12px}.options button,.actions button{width:100%;text-align:left;padding:12px 14px;border:1px solid #3b4a77;border-radius:10px;background:var(--panel2);color:var(--text);cursor:pointer}.options button:hover,.actions button:hover{border-color:var(--accent);transform:translateY(-1px)}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #46557f;background:#0b1122;color:white;font-size:1rem}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.actions button{width:auto;text-align:center;background:#26365f}.feedback{margin-top:12px;min-height:24px}.ok{color:var(--ok)}.bad{color:var(--bad)}.hint{color:var(--muted);font-size:.92rem}
+.lock{font-size:3rem;text-align:center}.final{border-color:#80621c;background:linear-gradient(135deg,#29203a,#172642)}.small{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="hero">
+  <div class="badge">MATEMÁTICAS B · FUNCIONES Y GRÁFICAS</div>
+  <h1>El laboratorio de las funciones</h1>
+  <p class="subtitle">Escape room interactivo basado en el contenido del tema: funciones reales, dominio y recorrido, continuidad, periodicidad, simetrías, tasa de variación, crecimiento, máximos y mínimos, concavidad y puntos de inflexión.</p>
+  <p><strong>Historia:</strong> El Laboratorio Cartié ha quedado bloqueado. El sistema de seguridad solo acepta una secuencia de códigos matemáticos. Para escapar tendrás que reparar cinco módulos y conseguir sus claves.</p>
+  <div class="stats">
+    <div class="stat">⏱️ Tiempo: <b id="timer">25:00</b></div>
+    <div class="stat">⭐ Puntos: <b id="score">0</b></div>
+    <div class="stat">🔐 Módulo: <b id="module">1/5</b></div>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</section>
+
+<section class="room active" id="intro">
+  <div class="lock">🔒</div>
+  <h2>Protocolo de escape</h2>
+  <div class="card">
+    <p><strong>Reglas</strong></p>
+    <ul>
+      <li>Hay 5 módulos. Debes superar cada uno para desbloquear el siguiente.</li>
+      <li>Cada respuesta correcta suma <strong>100 puntos</strong>. Una pista resta <strong>20 puntos</strong>.</li>
+      <li>En preguntas de opción múltiple debes elegir una respuesta. En los códigos numéricos, escribe el valor solicitado.</li>
+      <li>El cronómetro es orientativo: si llega a cero, la partida continúa, pero se pierde la bonificación final.</li>
+      <li>La puntuación máxima es <strong>1000 puntos</strong> si no usas pistas.</li>
+    </ul>
+  </div>
+  <div class="actions"><button onclick="startGame()">▶ Comenzar misión</button></div>
+</section>
+
+<section class="room" id="r1">
+<span class="badge">MÓDULO 1 · IDENTIDAD DE UNA FUNCIÓN</span>
+<h2>La puerta de los valores</h2>
+<p>El primer cierre verifica si sabes reconocer qué es una función y cómo leer su gráfica.</p>
+<div class="card"><div class="question">1. En una función, a cada elemento del conjunto inicial le corresponde…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: a cada x le corresponde un único valor y=f(x).')">un elemento y solo uno del conjunto final.</button>
+<button onclick="answer(this,false,'Revisa la definición de función.')">varios elementos del conjunto final obligatoriamente.</button>
+<button onclick="answer(this,false,'Revisa la definición de función.')">ningún elemento del conjunto final.</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">2. Para f(x)=x²−1, ¿cuál es f(2)?</div>
+<input id="q12" type="number" placeholder="Escribe el valor">
+<div class="actions"><button onclick="numeric('q12',3,this,'f(2)=2²−1=3.')">Comprobar</button></div><div class="feedback"></div></div>
+<div class="card"><div class="question">3. Para f(x)=x²−1, ¿cuál es el corte con OY?</div>
+<input id="q13" type="text" placeholder="Formato: (x,y)">
+<div class="actions"><button onclick="textAnswer('q13','(0,-1)',this,'En OY, x=0; por tanto f(0)=-1.')">Comprobar</button></div><div class="feedback"></div></div>
+<div class="actions"><button id="next1" disabled onclick="go(2)">Desbloquear módulo 2 →</button></div>
+</section>
+
+<section class="room" id="r2">
+<span class="badge">MÓDULO 2 · DOMINIO Y FUNCIONES A TROZOS</span>
+<h2>El pasillo de los dominios</h2>
+<p>El laboratorio detecta dos tipos de puertas: cocientes y raíces. Solo se abren respetando sus restricciones.</p>
+<div class="card"><div class="question">1. ¿Cuál es el dominio de f(x)=2/(x−1)?</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: x=1 anula el denominador y queda excluido.')">ℝ − {1}</button>
+<button onclick="answer(this,false,'Un cociente excluye los valores que anulan el denominador.')">ℝ</button>
+<button onclick="answer(this,false,'No se trata de una raíz.')">[1,+∞)</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">2. ¿Cuál es el dominio de f(x)=√(x+3)?</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: x+3≥0, luego x≥−3.')">[−3,+∞)</button>
+<button onclick="answer(this,false,'La desigualdad correcta es x+3≥0.')">(-∞,−3]</button>
+<button onclick="answer(this,false,'El radicando puede valer cero.')">(-3,+∞)</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">3. Una función definida a trozos utiliza…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: cambia la expresión según el intervalo de x.')">distintas expresiones según los valores de x.</button>
+<button onclick="answer(this,false,'No es la definición del material.')">una sola expresión para todos los x.</button>
+<button onclick="answer(this,false,'No es la definición del material.')">solo valores enteros de x.</button>
+</div><div class="feedback"></div></div>
+<div class="actions"><button id="next2" disabled onclick="go(3)">Desbloquear módulo 3 →</button></div>
+</section>
+
+<section class="room" id="r3">
+<span class="badge">MÓDULO 3 · CONTINUIDAD, PERIODICIDAD Y SIMETRÍA</span>
+<h2>La cámara de los espejos</h2>
+<p>Los espejos muestran gráficas repetidas y reflejadas. Identifica sus propiedades para obtener el código.</p>
+<div class="card"><div class="question">1. Una función es periódica de periodo T cuando…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: la relación fundamental es f(x+T)=f(x).')">f(x+T)=f(x)</button>
+<button onclick="answer(this,false,'Eso no expresa periodicidad.')">f(x+T)=−f(x)</button>
+<button onclick="answer(this,false,'Eso no expresa periodicidad.')">f(x+T)=x+T</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">2. Si f(−x)=f(x), la función es…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: es simétrica respecto al eje OY y se llama par.')">PAR</button>
+<button onclick="answer(this,false,'La función impar cumple f(−x)=−f(x).')">IMPAR</button>
+<button onclick="answer(this,false,'No corresponde a la definición.')">periódica</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">3. Si una función impar cumple f(3)=−2, ¿cuánto vale f(−3)?</div>
+<input id="q33" type="number" placeholder="Escribe el valor">
+<div class="actions"><button onclick="numeric('q33',2,this,'En una función impar, f(−x)=−f(x).')">Comprobar</button></div><div class="feedback"></div></div>
+<div class="actions"><button id="next3" disabled onclick="go(4)">Desbloquear módulo 4 →</button></div>
+</section>
+
+<section class="room" id="r4">
+<span class="badge">MÓDULO 4 · TASA DE VARIACIÓN Y MONOTONÍA</span>
+<h2>La sala de control</h2>
+<p>El panel calcula cómo cambia una magnitud. Recuerda que la TVM relaciona la variación de la función con la variación de x.</p>
+<div class="card"><div class="question">1. Para f(x)=−0,25x²−3x+1, calcula TVM[−3,0].</div>
+<input id="q41" type="number" step="0.01" placeholder="Resultado">
+<div class="actions"><button onclick="numeric('q41',-2.25,this,'TVM=(f(0)−f(−3))/(0−(−3))=−2,25.')">Comprobar</button></div><div class="feedback"></div></div>
+<div class="card"><div class="question">2. Una función es creciente en un intervalo si al aumentar x…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: x1<x2 implica f(x1)<f(x2).')">aumenta también f(x).</button>
+<button onclick="answer(this,false,'Eso describe el decrecimiento.')">disminuye f(x).</button>
+<button onclick="answer(this,false,'No es la definición.')">f(x) permanece siempre igual.</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">3. En el perfil de la Vuelta del material, ¿cuál es el máximo absoluto?</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: el máximo absoluto está en x=168 y vale 1882 m.')">x=168, y=1882 m</button>
+<button onclick="answer(this,false,'Ese es un máximo relativo, no el absoluto.')">x=71, y=1290 m</button>
+<button onclick="answer(this,false,'Es un mínimo relativo.')">x=87, y=630 m</button>
+</div><div class="feedback"></div></div>
+<div class="actions"><button id="next4" disabled onclick="go(5)">Desbloquear módulo 5 →</button></div>
+</section>
+
+<section class="room" id="r5">
+<span class="badge">MÓDULO 5 · MÁXIMOS, MÍNIMOS E INFLEXIÓN</span>
+<h2>La cámara final</h2>
+<p>La última cerradura exige interpretar la forma de una gráfica y distinguir sus puntos especiales.</p>
+<div class="card"><div class="question">1. Si una función pasa de creciente a decreciente, en ese punto presenta un…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: creciente antes y decreciente después indica máximo relativo.')">máximo relativo</button>
+<button onclick="answer(this,false,'El mínimo ocurre cuando pasa de decreciente a creciente.')">mínimo relativo</button>
+<button onclick="answer(this,false,'Eso no define un punto de inflexión.')">punto de inflexión</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">2. Los puntos en los que la función pasa de cóncava a convexa, o viceversa, se llaman…</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: son puntos de inflexión.')">puntos de inflexión</button>
+<button onclick="answer(this,false,'No es la definición del material.')">cortes con OX</button>
+<button onclick="answer(this,false,'No es la definición del material.')">máximos absolutos</button>
+</div><div class="feedback"></div></div>
+<div class="card"><div class="question">3. En el ejemplo del resumen, ¿qué puntos son de inflexión?</div>
+<div class="options">
+<button onclick="answer(this,true,'Correcto: el material identifica (−3,0) y (3,0).')">(−3,0) y (3,0)</button>
+<button onclick="answer(this,false,'Esos puntos son extremos, no los puntos de inflexión indicados.')">(−2,3) y (2,3)</button>
+<button onclick="answer(this,false,'x=0 no pertenece al dominio en ese ejemplo.')">(0,0)</button>
+</div><div class="feedback"></div></div>
+<div class="actions"><button id="finish" disabled onclick="finish()">🔓 Abrir la salida</button></div>
+</section>
+
+<section class="room final" id="end">
+<div class="lock">🚪✨</div>
+<h2>¡Escape conseguido!</h2>
+<p id="finalText"></p>
+<div class="card"><strong>Debrief de la misión</strong>
+<ul>
+<li>Has trabajado el concepto y la representación gráfica de una función.</li>
+<li>Has aplicado dominio, funciones a trozos, continuidad, periodicidad y simetría.</li>
+<li>Has calculado tasa de variación media y analizado crecimiento/decrecimiento.</li>
+<li>Has identificado máximos, mínimos, concavidad y puntos de inflexión.</li>
+</ul></div>
+<p class="small">Base conceptual: material “Funciones y gráficas”, Matemáticas B.</p>
+</section>
+</div>
+<script>
+let current=0,score=0,started=false,remaining=1500,correctByRoom=[0,0,0,0,0],answered=new Set(),timerId;
+function startGame(){started=true;go(1);timerId=setInterval(()=>{if(remaining>0){remaining--;document.getElementById('timer').textContent=fmt(remaining)}},1000)}
+function fmt(s){let m=Math.floor(s/60),r=s%60;return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0')}
+function go(n){document.querySelectorAll('.room').forEach(x=>x.classList.remove('active'));document.getElementById(n===1?'r1':'r'+n).classList.add('active');current=n;document.getElementById('module').textContent=n+'/5';document.getElementById('bar').style.width=((n-1)/5*100)+'%'}
+function award(){score+=100;document.getElementById('score').textContent=score;correctByRoom[current-1]++;checkRoom()}
+function answer(btn,ok,msg){if(btn.dataset.done)return;btn.dataset.done='1';let f=btn.parentElement.nextElementSibling;if(ok){award();f.innerHTML='<span class="ok">✓ '+msg+'</span>'}else{f.innerHTML='<span class="bad">✗ '+msg+'</span>';btn.disabled=true}}
+function numeric(id,val,btn,msg){if(btn.dataset.done)return;let v=parseFloat(document.getElementById(id).value.replace(',','.'));let f=btn.parentElement.nextElementSibling;if(Math.abs(v-val)<0.001){btn.dataset.done='1';award();f.innerHTML='<span class="ok">✓ '+msg+'</span>'}else f.innerHTML='<span class="bad">✗ Aún no. Revisa el cálculo.</span>'}
+function textAnswer(id,val,btn,msg){if(btn.dataset.done)return;let v=document.getElementById(id).value.trim().replaceAll(' ','');let f=btn.parentElement.nextElementSibling;if(v===val){btn.dataset.done='1';award();f.innerHTML='<span class="ok">✓ '+msg+'</span>'}else f.innerHTML='<span class="bad">✗ Revisa el corte con OY.</span>'}
+function checkRoom(){let needed=[3,3,3,3,3][current-1];let id=current===5?'finish':'next'+current;if(correctByRoom[current-1]>=needed)document.getElementById(id).disabled=false}
+function finish(){clearInterval(timerId);document.getElementById('bar').style.width='100%';document.querySelectorAll('.room').forEach(x=>x.classList.remove('active'));document.getElementById('end').classList.add('active');let bonus=remaining>0?100:0;score+=bonus;document.getElementById('score').textContent=score;document.getElementById('finalText').innerHTML='Puntuación final: <strong>'+score+' puntos</strong>.'+(bonus?' Has obtenido además la bonificación de tiempo de 100 puntos.':' El tiempo se agotó, así que no hay bonificación de tiempo.')+'<br><br>Rango: '+(score>=1000?'MAESTRO/A DE LAS FUNCIONES 🏆':score>=800?'EXPERTO/A EN GRÁFICAS ⭐':'INVESTIGADOR/A EN ENTRENAMIENTO 🔬');}
+</script>
+</body>
+</html>
